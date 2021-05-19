@@ -1,0 +1,221 @@
+
+Learning Objectives
+Explain why Machine Learning strategy is important
+	Apply satisficing and optimizing metrics to set up your goal for ML projects
+	Choose a correct train/dev/test split of your dataset
+	Define human-level performance
+	Use human-level performance to define key priorities in ML projects
+	Take the correct ML Strategic decision based on observations of performances and dataset
+	Week 1 - Structuring Machine Learning Projects
+	Why ML Strategy?
+	Given there are so many ways to build / design and optimise a ML model, it’s critical to understand what aspects and elements will truly make an impact to the performance of your system
+
+Orthogonalization
+	Orthogonal means at 90 degrees apart 
+	Orthogonalization in practice in Deep Learning refers to limiting the influence that different optimisations to your algorithm have by iterating strategically through the stages of model optimisation design tweaking different hyperparameters on different data sets below
+	We can work through a chain of assumptions to develop a model that works well in the real world: 
+	Fit training set well on cost function - bigger network on training set? Adam? 
+	Fit dev set well - Try regularization? Bigger test set
+	Fit test set well - Bigger dev set? 
+	Performs well in the real world - Play with dev set or cost function ? 
+
+
+Single number evaluation metric
+A single number “score” that MLops can use to evaluate performance of the changes we make to the model using a single figure 
+F1 score: we can think of this as the average between precision and recall
+It takes the “harmonic mean” of P and R 
+	Precision: of the classifier’s identified examples that were cat = 1, what % were actually cats? 
+	Recall: what % of actual cats are correctly recognised? 
+
+Satisficing and optimising evaluation metrics
+When evaluating models, we define performance in metrics such as “Optimizing” and “Satisficing” metrics 
+	Optimizing metrics such as “Accuracy” - should always be prioritised 
+	Satisficing metrics such as “Running time” are important but typically can be accepted if they meet a pre-set threshold e.g. max Running time = 150ms (anything less would be accepted where then, the highest values for optimizing metrics would be selected to determine best performance 
+
+Dev/Test distributions
+It’s critically important to ensure that the dev and test set data originate from the same distribution
+It’s important to ensure that the data across data sets is randomly shuffled before allocation to dev/test sets 
+Choose a dev/test set to reflect the data you expect to get in the future and want to do well on, this data should be featured in both the dev and test set 
+
+Size of Dev and Test Sets
+The modern day machine learning era has evolved to allow for a much smaller fraction of data to be allocated to dev and test sets, with 98/1/1 being a common approach
+Set the test set large enough to offer high confidence for the entire system 
+If you’re only working with two sets of data, then you are working with a train and dev set; which in some cases for the sole purpose of iterating on a smaller set for the sake of implementing the live model is okay
+
+When to change dev/test sets and metrics? 
+When your algorithm is presenting a lower error rate for a prediction but for example is letting through pornographic images, then it’s reasonable to modify metrics to change the evaluation of which model is performing better
+
+Formula: 1Mdevi=1Mdev{ypred(i) +y(i)
+How we implement a weight variable to adjust the evaluation of the prediction algorithm: 
+Formula with error metric: error =1w(i)i=1Mdevw(i){ypred(i) +y(i)}
+Including custom values for the w(i)above to increase the error rate for when pornographic images are identified 
+1 if x(i)is non-porn
+10 if x(i)is porn - increasing the error rate 
+
+Orthogonalization for this example would refer to the metrics we use to evaluate the performance of the classifiers (e.g. 1 step) 
+Figuring out how to do well on the metric should be treated as a separate objective (like another orthogonalization knob) 
+
+If you’re doing well on dev/test sets with your data sets but not so well when evaluating on the application data, it could mean that what you should actually be caring about is different to what you’ve established in the dev/test set - change your metrics 
+Comparing to human-level performance
+
+The Bayes / Bayesian optimal error is the best theoretical possible error (small) using a function and human-level performance is very close / in some cases negligible to bayes error - so we often use human-level performance to proxy the bayesian error
+Progress is fast to human-level performance but slow once you do pass it
+
+The tools we can employ to achieve human-level performance become limited and difficult once surpassing human intelligence 
+When referring to the bayesian error, we know human-level performance is just a proxy therefore, we can only take the theoretical maximum of what we know to be the documented human-level performance aka a team of doctors for a radiology image 
+For the purpose of publishing a paper, it may be acceptable to proxy human-level performance as better than a ‘typical human doctor’ -
+
+Tools we can use to improve the performance of algorithms using humans
+	Get labelled data from humans (x,y)
+	Gain insight from manual error analysis
+	Why did a person get this right / algorithm get this wrong?
+	Tweak / analyse the bias and variance 
+
+Avoidable bias
+The difference in error rate of humans as a proxy forbayesian error and the training set can be coined “avoidable bias”
+The difference in error rate between the training set and dev set can be addressed with variance avoidance techniques 
+When you approach human-level performance, you need to be very careful when estimating bayes error using human-level performance 
+For example, if you’ve estimated the human-level performance based on an average doctor, the bayes error will be much smaller in something like say, a team of doctors, which may impact the performance of your model
+Surpassing human-level performance 
+
+ML can often significantly outperform humans where there is access to human amounts of structured data such as in online advertising, logistics, recommendations and loan approvals 
+Humans are very good at natural perception “tasks” like identifying a cat, speech etc
+	Improving the performance of your ML algorithm
+	A set of fundamental assumptions for supervised learning: 
+	We can fit the data wel ~ avoidable bias is lowl
+	The training set performance generalises well to the test/dev sets
+
+What can we do for improvement? 
+Reduce the avoidable bias and variance between the human-level performance, training error and dev error 
+Avoidable bias: 
+	Train bigger model
+	Train longer / better optimisation algorithm; Adam, RMSprop, momentum
+	NN architecture / hyperparameters search for better suited design
+	RNN architecture
+	CNN architecture 
+Variance:
+	Get more data
+	Regularization; L2, dropout, data augmentation 
+	NN architecture / hyperparameters search for better suited design
+	RNN architecture
+	CNN architecture
+
+Week 2
+Error analysis 
+Analysing the dev set to evaluate whether a single idea is worth working on by analysing the mislabeled examples from the algorithm 
+E.g. checking the mislabeled examples from a dev test (5-10 minute manual effort) to figure out what % are dogs and what aren’t 
+This can help the team make a much better decision as to what modifications to the model would have the best impact to work on 
+Build a table by drawing up a table for your mislabeled images and evaluate manually the images that are not cats (in the cat classifier) you will begin to understand what aspect of the mislabelled data is worth working on
+E.g. below it would seem working on Blurry image mislabels would be worthwhile
+
+Incorrectly labeled Y outputs
+When is it worth fixing labels? 
+DL algorithms are quite robust to random errors, if a researcher labelling cats accidentally classifies a doc as a cat randomly, then usually the algorithm will pick it up
+Systematic issues however, are a problem e.g. consistently marketing a small white dog as a cat 
+Error analysis for mislabeled Y outputs
+
+Questions to consider:
+	What is the overall error of the dev set? E.g. if 90% accuracy, you have 10% error
+	What % errors due to incorrect labels? If 6% mislabeled, you have 6% mislabeled error
+	What % errors are other causes? If 9.4%, there is 9.4% error to work towards improving
+
+If you’re choosing between two dev set algorithms and they’re negligible in their error rate e.g. 2.1% and 1.9% but you know there is mislabeled data, then it might be worth considering addressing the mislabeled data. 
+
+It’s super important that the dev/test sets come from the same distribution, we can explore ways to optimise the dev/test sets when the training example distribution is slightly different 
+	Build system quickly, then iterate 
+	Setup the dev/test set and metric to establish a target
+	Build the system quickly to evaluate performance against the metrics 
+	Use Bias/Variance analysis on the metrics to prioritise next steps 
+	Incorporate manual Error Analysis to clarify thoughts on Bias/Variance direction
+	Where there is immense prior academic literature, e.g. for self-driving cars ; it may be okay to build a complex system based on proven theory, then apply the above steps. However, typically start basic and iterate frequently - quick and dirty with keen analysis
+	Mismatched Training and Dev/Test Set
+	
+Training and testing on different distributions 
+When we have a large training data set and want to introduce data from another “reputable” distribution, we can increase the amount data that is fed into the dev/test set to ensure that a reasonable amount of quality data is being trained on in the test/dev set
+Bias and Variance with mismatched data distributions 
+We can create a “training-dev” set which carries the same data distribution as the dev/test set but we’re not training on it 
+Instead, we calve out a portion of this the training set to be named training-dev and we treat that as an additional distribution that we can run the algorithm on
+When we run the models and see that the error on the training error is low, but on the training-dev set error is high - we know that there is a variance problem 
+A data mismatch problem is classified when the training-dev set error is low, along with the training set error, but the dev set error is high
+This is a data-mismatch error 
+
+Large differences between bayes error proxy human level performance 0% and the training set and dev set can mean that there a few problems:
+Avoidable bias, because your training set is doing worse than human
+Data-mismatch error, because training-dev and dev set error % is large 
+
+
+General principles to consider and look at when diagnosing: 
+Review the differences in the error rate between data sets 
+
+Human-level error 
+4%
+	Avoidable bias
+	
+Training set error 
+7%
+	Variance 
+Training-dev set error 
+10%
+	Data mismatch
+	
+Dev set error 
+12%
+
+Addressing data mismatch with error analysis and artificial synthesis 
+Although there aren’t systematically sound ways to address this, there are a few things we can try: 
+
+Perform manual error analysis between training and dev/test sets to figure out if there’s more noise etc 
+Find ways to make the training data more similar to the test/dev sets; e.g. simulate the “noisy” data that can then be factored into the training data such as artificial data synthesis 
+E.g. a clear audio recording clip + inside car noise synthesised together will give you a synthesised audio clip of the clear audio clip with car noise for training 
+If your “noisy” data that you plan to combine with training data is limited or non-exhaustive; it may overfit to the artificial synthesis data set 
+Learning from Multiple Tasks
+
+Transfer learning 
+	Transfer learning occurs when you take the previous layers of a former network, updating the final layer with an output for an alternative output 
+	E.g. taking the former layers of an image recognition system then modifying the final layer output to fit the weights and biases for radiology images 
+	After transferring learning from as many layers as you’d like, you can add append multiple more layers on the back of the layer for refinement
+	Refinement is known as “fine tuning” 
+	When does it make sense to use transfer learning? 
+	When A and B tasks have the same input x type (e.g. images, audio clips etc) 
+	More data available for Task A that could related to Task B
+	Low level features from Task A could be helpful for Task B
+	Transfer learning is used widely in ML ops today, it’s very effective for when you have a small set of data that emulates similar low-level features such as big image recognition nets, seeking to identify a specific type of image (like horses) 
+
+Multi-task learning
+	An approach to simultaneously learn from multiple tasks at once to help improve the performance of the output 
+
+	The formula to find the Loss for y which is a (4,1) dimensional vector if we are trying to image recognise whether there is a car, pedestrian, stop sign and/or traffic light is as follows: 
+
+	1mi=1mj=14(yj(i), yj(i)) 1 over m, sum over all training examples m i=1, sum over all training examples car, pedestrian, stop sign and/or traffic light j=1 then compute the usual logistic loss for y j(i) and yj(i)
+
+	Usual logistic loss is: -yj(i)yj(i)-(1-yj(i))(1-yj(i))
+	The difference between multi-task learning and softmax is that softmax will assign a single label to an image, whereas multi-task learning will seek to identify whether any of the 4 classes (in our example above) is visible in the image 
+
+	Multi-task learning can often perform better to classify with the above formula than if you were to train the 4 models separately 
+
+	Multitask learning can even work where the data is not complete for all of your 4 classes, e.g. if car = 1, pedestrian = 0, traffic light = ??? and/or stop sign = ??? 
+	The trick is to ensure that where we have j=14to only sum over the values of J where there is a value either 0 or 1 - otherwise we omit the ? values from the summation 
+	If you can train a big enough neural network, multi-task learning should always help produce more efficient results- computer vision is a good example of where multi-task learning is very prominent but otherwise it’s an underrated field of investment for models 
+
+End-to-end Deep Learning
+Consider pre-existing models that have been developed in the industry to achieve an objective rather than building a system from scratch to achieve 1 objective.
+For example, in image recognition for employee’s faces on a turnstyle, the systems use a 2-step system that first identifies the face of the person, for which there is a lot of data, then second user (x,y) vector to compare the captured employee’s face with that within the company’s database 
+Deciding on whether to use an end-to-end approach
+
+Building an end-to-end approach allows your learning algorithm to decide for itself what the output should be based on the data you have provided
+Especially valuable in the circumstances where you feel like the data may provide more insight than preconceived human assumptions on the outputs previously 
+E.g. linguistic phonemes (c - ca a- uh t- tah)
+
+Hand designed components can be both beneficial and harmful to learning algorithms
+In some cases it can be beneficial to inject manual knowledge into the algorithm
+In other cases it may fit some unwanted or confusing data to your algorithm unnecessarily 
+A key question to ask when considering E2E deep learning is whether you have sufficient data or not to learn a function of the complexity of the outcome you’re seeking for (x,y)
+Be mindful of where E2E deep learning is best used versus where it can provide the best (x,y) output in conjunction with other software solutions, such as motion planning + DL being the best overall performance for autonomous cars
+
+
+
+
+
+
+
+
